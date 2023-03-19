@@ -1,5 +1,7 @@
 import './App.css'
 import { useState } from "react";
+import HexInput from './components/HexInput';
+import RgbOutput from './components/RgbOutput';
 
 function App() {
   let [color, setColor] = useState('');
@@ -8,34 +10,40 @@ function App() {
     setColor(e.target.value);
   }
 
-  function convert(hex) {
-    let result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-    let timer;
-    return function() {
-      clearTimeout(timer);
-      timer = setTimeout(() => {
-        console.log(toGetArrRgb(result));
-      }, 2000);
+  const convert = (hex) => {
+    let arr = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    
+     if (hex.length === 7 && arr) {
+      return `rgb(${[
+        parseInt(arr[1], 16),
+        parseInt(arr[2], 16),
+        parseInt(arr[3], 16),
+      ].join(',')})`;
+     } 
+  }
+
+  const addBackgroundColor = () => {
+    return !convert(color) && color.length === 7 ? 'red' : convert(color);
+  }
+
+  const checkBrightness = (color) => {
+    if (color) {
+      const newColor = color;
+      const arr = newColor.slice(0, -1).slice(4,).split(',');
+      const brightValue = arr.reduce((acc, el) => acc + Number(el), 0);
+      return brightValue > 382 ? '#000' : '#fff';
     }
   }
 
-  const toGetArrRgb = (arr) => {
-    return arr ? 
-    `rgb(${[
-      parseInt(arr[1], 16),
-      parseInt(arr[2], 16),
-      parseInt(arr[3], 16),
-    ].join(',')})` : 'Ошибка!';
-  }
-
-  const rgb = convert(color)();
-
   return (
-    <div className='App' style={{background: rgb}}>
-        <input type="text" placeholder="Write HEX" value={color} onChange={handleInput} maxLength="7"/>
-        <div className="output" style={{background: rgb}}>{rgb}</div>
+    <div className='App' style={{background: addBackgroundColor()}}>
+      <HexInput color={color} addHex={handleInput}/>
+      <RgbOutput 
+        text={!convert(color) && color.length === 7 ? 'Ошибка!' : convert(color)}
+        color={addBackgroundColor()} brightness={checkBrightness(convert(color))}
+      />
     </div>
   )
 }
 
-export default App
+export default App;

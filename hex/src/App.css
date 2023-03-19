@@ -11,19 +11,19 @@
     height: 100vh;
 }
 
+.output {
+    color: #000;
+}
+
 input, .output {
     height: 40px;
     width: 200px;
     padding: 5px 10px;
     text-align: center;
-    border: 1px solid #000;;
+    border: 1px solid #000;
     margin-bottom: 5px;
 }
 
 input:focus {
     outline: none;
-}
-
-div {
-    color: #fff;
 }
